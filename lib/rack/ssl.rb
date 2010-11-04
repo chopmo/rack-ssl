@@ -3,8 +3,18 @@ require 'rack/request'
 
 module Rack
   class SSL
-    def initialize(app)
+    YEAR = 31536000
+
+    def self.default_hsts_options
+      { :expires => YEAR, :subdomains => false }
+    end
+
+    def initialize(app, options = {})
       @app = app
+
+      @hsts = options[:hsts]
+      @hsts = {} if @hsts.nil? || @hsts == true
+      @hsts = self.class.default_hsts_options.merge(@hsts) if @hsts
     end
 
     def call(env)
@@ -38,7 +48,13 @@ module Rack
 
       # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
       def hsts_headers
-        { 'Strict-Transport-Security' => "max-age=16070400; includeSubDomains" }
+        if @hsts
+          value = "max-age=#{@hsts[:expires]}"
+          value += "; includeSubDomains" if @hsts[:subdomains]
+          { 'Strict-Transport-Security' => value }
+        else
+          {}
+        end
       end
 
       def flag_cookies_as_secure!(headers)
