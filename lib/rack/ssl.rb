@@ -11,6 +11,7 @@ module Rack
       if scheme(env) == 'https'
         status, headers, body = @app.call(env)
         headers = hsts_headers.merge(headers)
+        flag_cookies_as_secure!(headers)
         [status, headers, body]
       else
         redirect_to_https(env)
@@ -38,6 +39,17 @@ module Rack
       # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
       def hsts_headers
         { 'Strict-Transport-Security' => "max-age=16070400; includeSubDomains" }
+      end
+
+      def flag_cookies_as_secure!(headers)
+        cookies = headers['Set-Cookie'].split("\n")
+        headers['Set-Cookie'] = cookies.map { |cookie|
+          if cookie !~ / secure;/
+            "#{cookie}; secure"
+          else
+            cookie
+          end
+        }.join("\n")
       end
   end
 end
