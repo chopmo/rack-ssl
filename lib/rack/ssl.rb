@@ -9,7 +9,9 @@ module Rack
 
     def call(env)
       if scheme(env) == 'https'
-        @app.call(env)
+        status, headers, body = @app.call(env)
+        headers = hsts_headers.merge(headers)
+        [status, headers, body]
       else
         redirect_to_https(env)
       end
@@ -30,7 +32,12 @@ module Rack
       def redirect_to_https(env)
         req      = Request.new(env)
         location = req.url.sub(/^http:/, 'https:')
-        [301, {'Content-Type' => "text/html", 'Location' => location}, []]
+        [301, hsts_headers.merge({'Content-Type' => "text/html", 'Location' => location}), []]
+      end
+
+      # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
+      def hsts_headers
+        { 'Strict-Transport-Security' => "max-age=16070400; includeSubDomains" }
       end
   end
 end

@@ -30,4 +30,9 @@ class TestSSL < Test::Unit::TestCase
     assert last_response.redirect?
     assert_equal "https://example.org/path?key=value", last_response.headers['Location']
   end
+
+  def test_strict_transport_security_header
+    get "https://example.org/path?key=value"
+    assert_equal "max-age=16070400; includeSubDomains", last_response.headers['Strict-Transport-Security']
+  end
 end
