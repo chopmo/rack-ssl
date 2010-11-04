@@ -74,4 +74,12 @@ class TestSSL < Test::Unit::TestCase
     assert_equal ["id=1; path=/; secure", "token=abc; path=/; secure; HttpOnly"],
       last_response.headers['Set-Cookie'].split("\n")
   end
+
+  def test_no_cookies
+    self.app = Rack::SSL.new(lambda { |env|
+      [200, {'Content-Type' => "text/html"}, ["OK"]]
+    })
+    get "https://example.org/"
+    assert !last_response.headers['Set-Cookie']
+  end
 end
