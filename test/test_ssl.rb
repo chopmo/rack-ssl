@@ -36,6 +36,12 @@ class TestSSL < Test::Unit::TestCase
       last_response.headers['Location']
   end
 
+  def test_exclude_from_redirect
+    self.app = Rack::SSL.new(default_app, :exclude => lambda { |env| true })
+    get "http://example.org/"
+    assert last_response.ok?
+  end
+
   def test_hsts_header_by_default
     get "https://example.org/"
     assert_equal "max-age=31536000",

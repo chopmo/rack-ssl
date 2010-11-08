@@ -15,10 +15,14 @@ module Rack
       @hsts = options[:hsts]
       @hsts = {} if @hsts.nil? || @hsts == true
       @hsts = self.class.default_hsts_options.merge(@hsts) if @hsts
+
+      @exclude = options[:exclude]
     end
 
     def call(env)
-      if scheme(env) == 'https'
+      if @exclude && @exclude.call(env)
+        @app.call(env)
+      elsif scheme(env) == 'https'
         status, headers, body = @app.call(env)
         headers = hsts_headers.merge(headers)
         flag_cookies_as_secure!(headers)
