@@ -88,4 +88,11 @@ class TestSSL < Test::Unit::TestCase
     get "https://example.org/"
     assert !last_response.headers['Set-Cookie']
   end
+
+  def test_redirect_to_secure_subdomain
+    self.app = Rack::SSL.new(default_app, :subdomain => "ssl")
+    get "http://example.org/path?key=value"
+    assert_equal "https://ssl.example.org/path?key=value",
+      last_response.headers['Location']
+  end
 end
