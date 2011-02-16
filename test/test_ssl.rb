@@ -89,10 +89,24 @@ class TestSSL < Test::Unit::TestCase
     assert !last_response.headers['Set-Cookie']
   end
 
-  def test_redirect_to_secure_subdomain
-    self.app = Rack::SSL.new(default_app, :subdomain => "ssl")
+  def test_redirect_to_host
+    self.app = Rack::SSL.new(default_app, :host => "ssl.example.org")
     get "http://example.org/path?key=value"
     assert_equal "https://ssl.example.org/path?key=value",
+      last_response.headers['Location']
+  end
+
+  def test_redirect_to_secure_host_when_on_subdomain
+    self.app = Rack::SSL.new(default_app, :host => "ssl.example.org")
+    get "http://ssl.example.org/path?key=value"
+    assert_equal "https://ssl.example.org/path?key=value",
+      last_response.headers['Location']
+  end
+
+  def test_redirect_to_secure_subdomain_when_on_deep_subdomain
+    self.app = Rack::SSL.new(default_app, :host => "example.co.uk")
+    get "http://double.rainbow.what.does.it.mean.example.co.uk/path?key=value"
+    assert_equal "https://example.co.uk/path?key=value",
       last_response.headers['Location']
   end
 end
