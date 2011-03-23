@@ -70,7 +70,7 @@ module Rack
       def flag_cookies_as_secure!(headers)
         if cookies = headers['Set-Cookie']
           headers['Set-Cookie'] = cookies.split("\n").map { |cookie|
-            if cookie !~ / secure;/
+            if cookie !~ / secure(;|$)/
               "#{cookie}; secure"
             else
               cookie
