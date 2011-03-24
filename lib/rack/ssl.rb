@@ -69,7 +69,13 @@ module Rack
 
       def flag_cookies_as_secure!(headers)
         if cookies = headers['Set-Cookie']
-          headers['Set-Cookie'] = cookies.split("\n").map { |cookie|
+          # Rack 1.1's set_cookie_header! will sometimes wrap
+          # Set-Cookie in an array
+          unless cookies.respond_to?(:to_ary)
+            cookies = cookies.split("\n")
+          end
+
+          headers['Set-Cookie'] = cookies.map { |cookie|
             if cookie !~ /; secure(;|$)/
               "#{cookie}; secure"
             else
