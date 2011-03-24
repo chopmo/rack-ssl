@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name      = 'rack-ssl'
-  s.version   = '1.3.0'
+  s.version   = '1.3.1'
   s.date      = '2011-02-16'
 
   s.homepage    = "https://github.com/josh/rack-ssl"
