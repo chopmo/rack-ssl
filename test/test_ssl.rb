@@ -124,6 +124,20 @@ class TestSSL < Test::Unit::TestCase
       last_response.headers['Location']
   end
 
+  def test_redirect_to_port
+    self.app = Rack::SSL.new(default_app, :port => 8443)
+    get "http://example.org/path?key=value"
+    assert_equal "https://example.org:8443/path?key=value",
+      last_response.headers['Location']
+  end
+
+  def test_redirect_to_host_and_port
+    self.app = Rack::SSL.new(default_app, :host => "ssl.example.org", :port => 8443)
+    get "http://example.org/path?key=value"
+    assert_equal "https://ssl.example.org:8443/path?key=value",
+      last_response.headers['Location']
+  end
+
   def test_redirect_to_secure_host_when_on_subdomain
     self.app = Rack::SSL.new(default_app, :host => "ssl.example.org")
     get "http://ssl.example.org/path?key=value"
