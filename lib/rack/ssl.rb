@@ -18,6 +18,7 @@ module Rack
 
       @exclude = options[:exclude]
       @host    = options[:host]
+      @port    = options[:port]
     end
 
     def call(env)
@@ -50,6 +51,7 @@ module Rack
         url        = URI(req.url)
         url.scheme = "https"
         url.host   = @host if @host
+        url.port   = @port if @port
         headers    = hsts_headers.merge('Content-Type' => 'text/html',
                                         'Location'     => url.to_s)
 
