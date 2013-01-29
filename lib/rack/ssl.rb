@@ -50,10 +50,11 @@ module Rack
         url        = URI(req.url)
         url.scheme = "https"
         url.host   = @host if @host
+        status     = %w[GET HEAD].include?(req.request_method) ? 301 : 307
         headers    = hsts_headers.merge('Content-Type' => 'text/html',
                                         'Location'     => url.to_s)
 
-        [301, headers, []]
+        [status, headers, []]
       end
 
       # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02

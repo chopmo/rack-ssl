@@ -137,4 +137,39 @@ class TestSSL < Test::Unit::TestCase
     assert_equal "https://example.co.uk/path?key=value",
       last_response.headers['Location']
   end
+
+  def test_status_get
+    get "http://example.org/"
+    assert_equal 301, last_response.status
+  end
+
+  def test_status_head
+    head "http://example.org/"
+    assert_equal 301, last_response.status
+  end
+
+  def test_status_options
+    options "http://example.org/"
+    assert_equal 307, last_response.status
+  end
+
+  def test_status_post
+    post "http://example.org/"
+    assert_equal 307, last_response.status
+  end
+
+  def test_status_put
+    put "http://example.org/"
+    assert_equal 307, last_response.status
+  end
+
+  def test_status_delete
+    delete "http://example.org/"
+    assert_equal 307, last_response.status
+  end
+
+  def test_status_patch
+    patch "http://example.org/"
+    assert_equal 307, last_response.status
+  end
 end
