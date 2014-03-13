@@ -56,7 +56,7 @@ module Rack
 
         [status, headers, []]
       rescue URI::InvalidURIError
-        [404, {}, []]
+        [400, {}, []]
       end
 
       # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
