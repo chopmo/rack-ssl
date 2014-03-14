@@ -173,11 +173,11 @@ class TestSSL < Test::Unit::TestCase
     assert_equal 307, last_response.status
   end
 
-  def test_invalid_uri_returns_404
+  def test_invalid_uri_returns_400
     # Can't test this with Rack::Test because it fails on the URI before it
     # even gets to Rack::SSL. Other webservers will pass this URI through.
     ssl  = Rack::SSL.new(nil)
     resp = ssl.call('PATH_INFO' => "https://example.org/path/<script>")
-    assert_equal 404, resp[0]
+    assert_equal 400, resp[0]
   end
 end
