@@ -48,6 +48,11 @@ class TestSSL < Test::Unit::TestCase
       last_response.headers['Strict-Transport-Security']
   end
 
+  def test_no_hsts_with_insecure_connection
+    get "http://example.org/"
+    assert !last_response.headers['Strict-Transport-Security']
+  end
+
   def test_hsts_header
     self.app = Rack::SSL.new(default_app, :hsts => true)
     get "https://example.org/"

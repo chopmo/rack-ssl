@@ -51,8 +51,7 @@ module Rack
         url.scheme = "https"
         url.host   = @host if @host
         status     = %w[GET HEAD].include?(req.request_method) ? 301 : 307
-        headers    = hsts_headers.merge('Content-Type' => 'text/html',
-                                        'Location'     => url.to_s)
+        headers    = { 'Content-Type' => 'text/html', 'Location' => url.to_s }
 
         [status, headers, []]
       end
