@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
 
   s.homepage    = "https://github.com/josh/rack-ssl"
   s.summary     = "Force SSL/TLS in your app."
+  s.license     = "MIT"
   s.description = <<-EOS
     Rack middleware to force SSL/TLS.
   EOS
