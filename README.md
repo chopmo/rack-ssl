@@ -7,7 +7,15 @@ Force SSL/TLS in your app.
 2. Set `Strict-Transport-Security` header
 3. Flag all cookies as "secure"
 
+
+Installation
+------------
+
+    gem install rack-ssl
+
+
 Usage
 -----
 
+    require 'rack/ssl'
     use Rack::SSL
