@@ -46,16 +46,15 @@ module Rack
       end
 
       def redirect_to_https(env)
-        req        = Request.new(env)
-        url        = URI(req.url)
-        url.scheme = "https"
-        url.host   = @host if @host
-        status     = %w[GET HEAD].include?(req.request_method) ? 301 : 307
-        headers    = { 'Content-Type' => 'text/html', 'Location' => url.to_s }
+        req = Request.new(env)
+
+        host = @host || req.host
+        location = "https://#{host}#{req.fullpath}"
+
+        status  = %w[GET HEAD].include?(req.request_method) ? 301 : 307
+        headers = { 'Content-Type' => 'text/html', 'Location' => location }
 
         [status, headers, []]
-      rescue URI::InvalidURIError
-        [400, {"Content-Type" => "text/plain"}, []]
       end
 
       # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02

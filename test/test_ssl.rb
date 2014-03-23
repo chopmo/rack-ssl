@@ -129,6 +129,13 @@ class TestSSL < Test::Unit::TestCase
       last_response.headers['Location']
   end
 
+  def test_redirect_to_host_port
+    self.app = Rack::SSL.new(default_app, :host => "ssl.example.org:443")
+    get "http://example.org/path?key=value"
+    assert_equal "https://ssl.example.org:443/path?key=value",
+      last_response.headers['Location']
+  end
+
   def test_redirect_to_secure_host_when_on_subdomain
     self.app = Rack::SSL.new(default_app, :host => "ssl.example.org")
     get "http://ssl.example.org/path?key=value"
@@ -176,13 +183,5 @@ class TestSSL < Test::Unit::TestCase
   def test_status_patch
     patch "http://example.org/"
     assert_equal 307, last_response.status
-  end
-
-  def test_invalid_uri_returns_400
-    # Can't test this with Rack::Test because it fails on the URI before it
-    # even gets to Rack::SSL. Other webservers will pass this URI through.
-    ssl  = Rack::SSL.new(nil)
-    resp = ssl.call('PATH_INFO' => "https://example.org/path/<script>")
-    assert_equal 400, resp[0]
   end
 end
