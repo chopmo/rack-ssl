@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name      = 'rack-ssl'
-  s.version   = '1.4.0'
-  s.date      = '2014-03-17'
+  s.version   = '1.4.1'
+  s.date      = '2014-03-23'
 
   s.homepage    = "https://github.com/josh/rack-ssl"
   s.summary     = "Force SSL/TLS in your app."
