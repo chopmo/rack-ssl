@@ -3,10 +3,10 @@ require 'rack/request'
 
 module Rack
   class SSL
-    YEAR = 31536000
+    YEAR = 31_536_000
 
     def self.default_hsts_options
-      { :expires => YEAR, :subdomains => false }
+      { expires: YEAR, subdomains: false }
     end
 
     def initialize(app, options = {})
@@ -34,56 +34,55 @@ module Rack
     end
 
     private
-      # Fixed in rack >= 1.3
-      def scheme(env)
-        if env['HTTPS'] == 'on'
-          'https'
-        elsif env['HTTP_X_FORWARDED_PROTO']
-          env['HTTP_X_FORWARDED_PROTO'].split(',')[0]
-        else
-          env['rack.url_scheme']
-        end
+
+    # Fixed in rack >= 1.3
+    def scheme(env)
+      if env['HTTPS'] == 'on'
+        'https'
+      elsif env['HTTP_X_FORWARDED_PROTO']
+        env['HTTP_X_FORWARDED_PROTO'].split(',')[0]
+      else
+        env['rack.url_scheme']
       end
+    end
 
-      def redirect_to_https(env)
-        req = Request.new(env)
+    def redirect_to_https(env)
+      req = Request.new(env)
 
-        host = @host || req.host
-        location = "https://#{host}#{req.fullpath}"
+      host = @host || req.host
+      location = "https://#{host}#{req.fullpath}"
 
-        status  = %w[GET HEAD].include?(req.request_method) ? 301 : 307
-        headers = { 'Content-Type' => 'text/html', 'Location' => location }
+      status  = %w(GET HEAD).include?(req.request_method) ? 301 : 307
+      headers = { 'Content-Type' => 'text/html', 'Location' => location }
 
-        [status, headers, []]
+      [status, headers, []]
+    end
+
+    # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
+    def hsts_headers
+      if @hsts
+        value = "max-age=#{@hsts[:expires]}"
+        value += '; includeSubDomains' if @hsts[:subdomains]
+        { 'Strict-Transport-Security' => value }
+      else
+        {}
       end
+    end
 
-      # http://tools.ietf.org/html/draft-hodges-strict-transport-sec-02
-      def hsts_headers
-        if @hsts
-          value = "max-age=#{@hsts[:expires]}"
-          value += "; includeSubDomains" if @hsts[:subdomains]
-          { 'Strict-Transport-Security' => value }
-        else
-          {}
-        end
-      end
+    def flag_cookies_as_secure!(headers)
+      if cookies = headers['Set-Cookie']
+        # Rack 1.1's set_cookie_header! will sometimes wrap
+        # Set-Cookie in an array
+        cookies = cookies.split("\n") unless cookies.respond_to?(:to_ary)
 
-      def flag_cookies_as_secure!(headers)
-        if cookies = headers['Set-Cookie']
-          # Rack 1.1's set_cookie_header! will sometimes wrap
-          # Set-Cookie in an array
-          unless cookies.respond_to?(:to_ary)
-            cookies = cookies.split("\n")
+        headers['Set-Cookie'] = cookies.map do |cookie|
+          if cookie !~ /; secure(;|$)/
+            "#{cookie}; secure"
+          else
+            cookie
           end
-
-          headers['Set-Cookie'] = cookies.map { |cookie|
-            if cookie !~ /; secure(;|$)/
-              "#{cookie}; secure"
-            else
-              cookie
-            end
-          }.join("\n")
-        end
+        end.join("\n")
       end
+    end
   end
 end
