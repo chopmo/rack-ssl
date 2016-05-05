@@ -3,9 +3,9 @@ Gem::Specification.new do |s|
   s.version   = '1.4.1'
   s.date      = '2014-03-23'
 
-  s.homepage    = "https://github.com/josh/rack-ssl"
-  s.summary     = "Force SSL/TLS in your app."
-  s.license     = "MIT"
+  s.homepage    = 'https://github.com/josh/rack-ssl'
+  s.summary     = 'Force SSL/TLS in your app.'
+  s.license     = 'MIT'
   s.description = <<-EOS
     Rack middleware to force SSL/TLS.
   EOS
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'rack'
 
-  s.authors           = ["Joshua Peek"]
-  s.email             = "josh@joshpeek.com"
+  s.authors           = ['Joshua Peek']
+  s.email             = 'josh@joshpeek.com'
   s.rubyforge_project = 'rack-ssl'
 end
